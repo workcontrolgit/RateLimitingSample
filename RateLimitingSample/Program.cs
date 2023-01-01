@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RateLimitingSample;
 using RateLimitingSample.Data;
-using RateLimitingSample.Enums;
 using RateLimitingSample.Extentions;
 using RateLimitingSample.Services;
 
@@ -35,9 +34,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//using var scope = app.Services.CreateScope();
-//var db = scope.ServiceProvider.GetService<TodoGroupDbContext>();
-//db?.Database.MigrateAsync();
 
 app.UseHttpsRedirection();
 
@@ -62,20 +58,6 @@ app.MapGet("/weatherforecast", () =>
 }).DisableRateLimiting()
 .WithTags("Weather");
 
-
-
-//static string GetTicks() => (DateTime.Now.Ticks & 0x11111).ToString("00000");
-
-//app.MapGet("/fixed", () => Results.Ok($"Fixed Window Limiter {GetTicks()}"))
-//                           .RequireRateLimiting(Policy.FixedWindow.ToString());
-
-//app.MapGet("/sliding", () => Results.Ok($"Sliding Window Limiter {GetTicks()}"))
-//                           .RequireRateLimiting(Policy.SlidingWindow.ToString());
-
-//app.MapGet("/token", () => Results.Ok($"Token Limiter {GetTicks()}"))
-//                           .RequireRateLimiting(Policy.BucketToken.ToString());
-
-//app.MapGet("/global", () => Results.Ok($"Global Limiter {GetTicks()}"));
 
 // todoV1 endpoints
 app.MapGroup("/todos/v1")
