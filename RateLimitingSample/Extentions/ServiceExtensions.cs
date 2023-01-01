@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.RateLimiting;
 using RateLimitingSample.Enums;
+using RateLimitingSample.Models;
 using System.Globalization;
-using System.Text.Json;
 using System.Threading.RateLimiting;
 
 namespace RateLimitingSample.Extentions
