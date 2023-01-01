@@ -1,3 +1,4 @@
+namespace RateLimitingSample.Models;
 public class MyRateLimitOptions
 {
     public const string MyRateLimit = "MyRateLimit";

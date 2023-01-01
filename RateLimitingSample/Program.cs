@@ -1,101 +1,28 @@
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using RateLimitingSample;
+using RateLimitingSample.Data;
 using RateLimitingSample.Enums;
 using RateLimitingSample.Extentions;
-using System.Globalization;
-using System.Threading.RateLimiting;
+using RateLimitingSample.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Services.AddRateLimiter(options =>
-//{
-//    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-//    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-//        RateLimitPartition.GetFixedWindowLimiter(
-//            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-//            factory: partition => new FixedWindowRateLimiterOptions
-//            {
-//                AutoReplenishment = true,
-//                PermitLimit = 1,
-//                QueueLimit = 0,
-//                Window = TimeSpan.FromMinutes(1)
-//            }));
-//});
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddTransient<ITodoService, TodoService>();
+builder.Services.AddSingleton<IEmailService, EmailService>();
+
+
 builder.Services.AddRateLimiterExtension(builder.Configuration);
-
-//builder.Services.Configure<MyRateLimitOptions>(
-//    builder.Configuration.GetSection(MyRateLimitOptions.MyRateLimit));
-
-//var myOptions = new MyRateLimitOptions();
-//builder.Configuration.GetSection(MyRateLimitOptions.MyRateLimit).Bind(myOptions);
-
-//var fixedConcurrency = "concurrency";
-//var fixedPolicy = "fixed";
-//var slidingPolicy = "sliding";
-//var tokenPolicy = "token";
-
-
-//builder.Services.AddRateLimiter(config =>
-//{
-//    config.OnRejected = (context, cancellationToken) =>
-//    {
-//        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
-//        {
-//            context.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds).ToString(NumberFormatInfo.InvariantInfo);
-//        }
-
-//        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-
-//        return new ValueTask();
-//    };
-
-//    config.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-//        RateLimitPartition.GetFixedWindowLimiter(
-//            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-//            factory: partition => new FixedWindowRateLimiterOptions
-//            {
-//                PermitLimit = myOptions.PermitLimit,
-//                Window = TimeSpan.FromSeconds(myOptions.Window),
-//                QueueLimit = myOptions.QueueLimit,
-//                AutoReplenishment = myOptions.AutoReplenishment
-//            }));
-
-//    config.AddConcurrencyLimiter(policyName: fixedConcurrency, options =>
-//    {
-//        options.PermitLimit = myOptions.PermitLimit;
-//        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-//        options.QueueLimit = myOptions.QueueLimit;
-//    });
-//    config.AddFixedWindowLimiter(policyName: fixedPolicy, options =>
-//    {
-//        options.PermitLimit = myOptions.PermitLimit;
-//        options.Window = TimeSpan.FromSeconds(myOptions.Window);
-//        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-//        options.QueueLimit = myOptions.QueueLimit;
-//    });
-//    config.AddSlidingWindowLimiter(policyName: slidingPolicy, options =>
-//    {
-//        options.PermitLimit = myOptions.PermitLimit;
-//        options.Window = TimeSpan.FromSeconds(myOptions.Window);
-//        options.SegmentsPerWindow = myOptions.SegmentsPerWindow;
-//        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-//        options.QueueLimit = myOptions.QueueLimit;
-//    });
-//    config.AddTokenBucketLimiter(policyName: tokenPolicy, options =>
-//    {
-//        options.TokenLimit = myOptions.TokenLimit;
-//        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-//        options.QueueLimit = myOptions.QueueLimit;
-//        options.ReplenishmentPeriod = TimeSpan.FromSeconds(myOptions.ReplenishmentPeriod);
-//        options.TokensPerPeriod = myOptions.TokensPerPeriod;
-//        options.AutoReplenishment = myOptions.AutoReplenishment;
-//    });
-//}
-//    );
+builder.Services.AddDbContext<TodoGroupDbContext>(options =>
+{
+    var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    options.UseSqlite($"Data Source={Path.Join(path, "RateLimitingSample.db")}");
+});
 
 
 
@@ -107,6 +34,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//using var scope = app.Services.CreateScope();
+//var db = scope.ServiceProvider.GetService<TodoGroupDbContext>();
+//db?.Database.MigrateAsync();
 
 app.UseHttpsRedirection();
 
@@ -145,7 +76,15 @@ app.MapGet("/token", () => Results.Ok($"Token Limiter {GetTicks()}"))
 
 app.MapGet("/global", () => Results.Ok($"Global Limiter {GetTicks()}"));
 
+// todoV1 endpoints
+app.MapGroup("/todos/v1")
+    .MapTodosApiV1()
+    .WithTags("Todo Endpoints");
 
+// todoV2 endpoints
+app.MapGroup("/todos/v2")
+    .MapTodosApiV2()
+    .WithTags("Todo Endpoints");
 
 app.Run();
 
