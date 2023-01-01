@@ -59,32 +59,33 @@ app.MapGet("/weatherforecast", () =>
         ))
         .ToArray();
     return forecast;
-}).DisableRateLimiting();
+}).DisableRateLimiting()
+.WithTags("Weather");
 
 
 
-static string GetTicks() => (DateTime.Now.Ticks & 0x11111).ToString("00000");
+//static string GetTicks() => (DateTime.Now.Ticks & 0x11111).ToString("00000");
 
-app.MapGet("/fixed", () => Results.Ok($"Fixed Window Limiter {GetTicks()}"))
-                           .RequireRateLimiting(Policy.FixedWindow.ToString());
+//app.MapGet("/fixed", () => Results.Ok($"Fixed Window Limiter {GetTicks()}"))
+//                           .RequireRateLimiting(Policy.FixedWindow.ToString());
 
-app.MapGet("/sliding", () => Results.Ok($"Sliding Window Limiter {GetTicks()}"))
-                           .RequireRateLimiting(Policy.SlidingWindow.ToString());
+//app.MapGet("/sliding", () => Results.Ok($"Sliding Window Limiter {GetTicks()}"))
+//                           .RequireRateLimiting(Policy.SlidingWindow.ToString());
 
-app.MapGet("/token", () => Results.Ok($"Token Limiter {GetTicks()}"))
-                           .RequireRateLimiting(Policy.BucketToken.ToString());
+//app.MapGet("/token", () => Results.Ok($"Token Limiter {GetTicks()}"))
+//                           .RequireRateLimiting(Policy.BucketToken.ToString());
 
-app.MapGet("/global", () => Results.Ok($"Global Limiter {GetTicks()}"));
+//app.MapGet("/global", () => Results.Ok($"Global Limiter {GetTicks()}"));
 
 // todoV1 endpoints
 app.MapGroup("/todos/v1")
     .MapTodosApiV1()
-    .WithTags("Todo Endpoints");
+    .WithTags("Todos");
 
 // todoV2 endpoints
 app.MapGroup("/todos/v2")
     .MapTodosApiV2()
-    .WithTags("Todo Endpoints");
+    .WithTags("Todos");
 
 app.Run();
 
