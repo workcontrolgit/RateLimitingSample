@@ -29,7 +29,9 @@ public static class TodoEndpointsV2
 
                 return await next(efiContext);
             })
-            .RequireRateLimiting(Policy.BucketToken.ToString());
+            // .DisableRateLimiting()
+            .RequireRateLimiting(Policy.BucketToken.ToString())
+            ;
 
         // bucket token
         group.MapPut("/{id}", UpdateTodo).RequireRateLimiting(Policy.BucketToken.ToString());
@@ -77,7 +79,7 @@ public static class TodoEndpointsV2
 
         await todoService.Add(newTodo);
 
-        return TypedResults.Created($"/todos/v1/{newTodo.Id}", newTodo);
+        return TypedResults.Created($"/todos/v2/{newTodo.Id}", newTodo);
     }
 
     // update todo
@@ -93,7 +95,7 @@ public static class TodoEndpointsV2
 
             await todoService.Update(existingTodo);
 
-            return TypedResults.Created($"/todos/v1/{existingTodo.Id}", existingTodo);
+            return TypedResults.Created($"/todos/v2/{existingTodo.Id}", existingTodo);
         }
 
         return TypedResults.NotFound();
