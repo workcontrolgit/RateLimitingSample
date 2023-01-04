@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "Integra
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{55A5B159-A92D-43C4-BE31-DAB4190ED9EF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoadTests-Standalone", "LoadTests\LoadTests-Standalone.csproj", "{977BA1E4-C89D-46B7-80A5-12F3ADF439A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoadTests", "LoadTests\LoadTests.csproj", "{977BA1E4-C89D-46B7-80A5-12F3ADF439A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
