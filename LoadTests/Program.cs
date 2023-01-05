@@ -9,6 +9,8 @@ var scenario = ScenariousHelper.GetToDoTestScenario(client);
 
 NBomberRunner
     .RegisterScenarios(scenario)
+    .WithReportFileName("fetch_todos_report")
+    .WithReportFolder("fetch_todos_reports")
     .WithReportFormats(ReportFormat.Txt, ReportFormat.Csv, ReportFormat.Html, ReportFormat.Md)
     .Run();
 
