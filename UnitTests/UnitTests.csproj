@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RateLimitingSample\RateLimitingSample.csproj" />
+    <ProjectReference Include="..\RateLimitingSample\WebApi.csproj" />
   </ItemGroup>
 
 </Project>

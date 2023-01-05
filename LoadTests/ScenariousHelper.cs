@@ -7,7 +7,7 @@ using NBomber.CSharp;
     {
         public static Scenario GetToDoTestScenario(HttpClient httpClient)
         {
-            var stepGetTodosV1 = Step.Create("call todos/v1", async (context) =>
+            var stepDisableRateLimiting = Step.Create("todos/v1, DisableRateLimiting", async (context) =>
             {
                 try
                 {
@@ -24,7 +24,7 @@ using NBomber.CSharp;
 
             });
 
-        var stepGetTodosV2 = Step.Create("call todos/v2", async context =>
+        var stepFixWindows = Step.Create("todos/v2, FixedWindow", async context =>
         {
             try
             {
@@ -41,7 +41,42 @@ using NBomber.CSharp;
             }
         });
 
-        var scenario = ScenarioBuilder.CreateScenario("call todos", stepGetTodosV1, stepGetTodosV2)
+        var stepSlidingWindow = Step.Create("todos/v2, SlidingWindow", async context =>
+        {
+            try
+            {
+                var response = await httpClient.GetAsync("todos/v2/incompleted");
+
+                return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+
+            }
+            catch (Exception ex)
+            {
+                return Response.Fail();
+            }
+        });
+
+        var stepBucketToken = Step.Create("todos/v2, BucketToken", async context =>
+        {
+            try
+            {
+                var response = await httpClient.GetAsync("todos/v2/1");
+
+                return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+
+            }
+            catch (Exception ex)
+            {
+                return Response.Fail();
+            }
+        });
+
+
+        var scenario = ScenarioBuilder.CreateScenario("Rate Limiting", stepDisableRateLimiting, stepFixWindows, stepSlidingWindow, stepBucketToken)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
                     LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromSeconds(30))

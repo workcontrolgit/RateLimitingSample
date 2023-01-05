@@ -13,7 +13,7 @@ public static class TodoEndpointsV2
         // fixed window
         group.MapGet("/incompleted", GetAllIncompletedTodos).RequireRateLimiting(Policy.SlidingWindow.ToString());
         //global rate limiting
-        group.MapGet("/{id}", GetTodo);
+        group.MapGet("/{id}", GetTodo).RequireRateLimiting(Policy.BucketToken.ToString());
         // bucket token
         group.MapPost("/", CreateTodo)
             .AddEndpointFilter(async (efiContext, next) =>
