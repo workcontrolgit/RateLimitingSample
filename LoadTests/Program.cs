@@ -4,13 +4,13 @@ using NBomber.CSharp;
 
 
 
-var client = ScenariousHelper.CreateClient();
-var scenario = ScenariousHelper.GetToDoTestScenario(client);
+var client = ScenarioHelper.CreateClient();
+var scenario = ScenarioHelper.GetToDoTestScenario(client);
 
 NBomberRunner
     .RegisterScenarios(scenario)
-    .WithReportFileName("fetch_todos_report")
-    .WithReportFolder("fetch_todos_reports")
+    .WithReportFileName("rate_limiting_report")
+    .WithReportFolder("rate_limiting_reports")
     .WithReportFormats(ReportFormat.Txt, ReportFormat.Csv, ReportFormat.Html, ReportFormat.Md)
     .Run();
 

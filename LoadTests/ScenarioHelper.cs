@@ -3,7 +3,7 @@ using NBomber.Contracts;
 using NBomber.CSharp;
 
 
-    public static class ScenariousHelper
+    public static class ScenarioHelper
     {
         public static Scenario GetToDoTestScenario(HttpClient httpClient)
         {
