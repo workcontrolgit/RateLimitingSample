@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RateLimitingSample", "RateLimitingSample\RateLimitingSample.csproj", "{2786E874-3CCB-4F37-802B-361F1425162C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi", "RateLimitingSample\WebApi.csproj", "{2786E874-3CCB-4F37-802B-361F1425162C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{35B26989-D9EF-437D-999F-7FDB1FD93107}"
 EndProject
