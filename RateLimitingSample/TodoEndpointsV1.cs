@@ -7,7 +7,7 @@ public static class TodoEndpointsV1
 {
     public static RouteGroupBuilder MapTodosApiV1(this RouteGroupBuilder group)
     {
-        group.MapGet("/", GetAllTodos).DisableRateLimiting();
+        group.MapGet("/", GetAllTodos);
         group.MapGet("/{id}", GetTodo).RequireRateLimiting(Policy.Concurrency.ToString());
         group.MapPost("/", CreateTodo)
             .AddEndpointFilter(async (efiContext, next) =>
