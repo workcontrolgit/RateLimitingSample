@@ -9,7 +9,7 @@ public static class TodoEndpointsV2
     public static RouteGroupBuilder MapTodosApiV2(this RouteGroupBuilder group)
     {
         // bucket token
-        group.MapGet("/", GetAllTodos).RequireRateLimiting(Policy.FixedWindow.ToString());
+        group.MapGet("/", GetAllTodos).RequireRateLimiting(Policy.UserBasedRateLimiting.ToString());
         // fixed window
         group.MapGet("/incompleted", GetAllIncompletedTodos).RequireRateLimiting(Policy.SlidingWindow.ToString());
         //global rate limiting

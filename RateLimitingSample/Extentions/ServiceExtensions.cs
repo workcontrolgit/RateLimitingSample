@@ -11,6 +11,9 @@ namespace RateLimitingSample.Extentions
         public static void AddRateLimiterExtension(this IServiceCollection services, IConfiguration configuration)
         {
 
+            services.Configure<MyRateLimitOptions>(
+                configuration.GetSection(MyRateLimitOptions.MyRateLimit));
+
             var myOptions = new MyRateLimitOptions();
             configuration.GetSection(MyRateLimitOptions.MyRateLimit).Bind(myOptions);
 
@@ -24,6 +27,9 @@ namespace RateLimitingSample.Extentions
                     }
 
                     context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    context.HttpContext.RequestServices.GetService<ILoggerFactory>()?
+                    .CreateLogger("Microsoft.AspNetCore.RateLimitingMiddleware")
+                    .LogWarning("OnRejected: {RequestPath}", context.HttpContext.Request.Path);
 
                     return new ValueTask();
                 };
@@ -39,14 +45,9 @@ namespace RateLimitingSample.Extentions
                             AutoReplenishment = myOptions.AutoReplenishment
                         }));
 
-                config.AddConcurrencyLimiter(policyName: Policy.Concurrency.ToString(), options =>
+                config.AddFixedWindowLimiter(policyName: Policy.UserBasedRateLimiting.ToString(), options =>
                 {
-                    options.PermitLimit = myOptions.PermitLimit;
-                    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                    options.QueueLimit = myOptions.QueueLimit;
-                });
-                config.AddFixedWindowLimiter(policyName: Policy.FixedWindow.ToString(), options =>
-                {
+                    var currentUser = context.RequestServices.GetService<ICurrentUser>();
                     options.PermitLimit = myOptions.PermitLimit;
                     options.Window = TimeSpan.FromSeconds(myOptions.Window);
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
@@ -69,6 +70,13 @@ namespace RateLimitingSample.Extentions
                     options.TokensPerPeriod = myOptions.TokensPerPeriod;
                     options.AutoReplenishment = myOptions.AutoReplenishment;
                 });
+                config.AddConcurrencyLimiter(policyName: Policy.Concurrency.ToString(), options =>
+                {
+                    options.PermitLimit = myOptions.PermitLimit;
+                    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    options.QueueLimit = myOptions.QueueLimit;
+                });
+
             }
                 );
         }

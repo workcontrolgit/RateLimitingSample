@@ -3,7 +3,7 @@
     public enum Policy
     {
         Concurrency,
-        FixedWindow,
+        UserBasedRateLimiting,
         SlidingWindow,
         BucketToken
 
