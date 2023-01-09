@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.RateLimiting;
 using RateLimitingSample.Enums;
 using RateLimitingSample.Models;
 using System.Globalization;
-using System.Net.Http;
 using System.Threading.RateLimiting;
 
 namespace RateLimitingSample.Extentions
@@ -39,9 +36,10 @@ namespace RateLimitingSample.Extentions
 
                 // example of policy based on login user name
 
-                config.AddPolicy(Policy.UserBasedPolicy.ToString(), context => { 
+                config.AddPolicy(Policy.UserBasedPolicy.ToString(), context =>
+                {
 
-                if (context.User.Identity?.IsAuthenticated == true) 
+                    if (context.User.Identity?.IsAuthenticated == true)
                     {
                         // UserBased, TokenBucket
                         configuration.GetSection(RateLimitingSettings.UserBasedTokenBucket).Bind(limitSettings);

@@ -51,7 +51,7 @@ public static class TodoEndpointsV2
         var todos = await todoService.GetIncompleteTodos();
         return TypedResults.Ok(todos);
     }
-// get completed
+    // get completed
     public static async Task<IResult> GetAllCompletedTodos(ITodoService todoService)
     {
         var todos = await todoService.GetCompleteTodos();

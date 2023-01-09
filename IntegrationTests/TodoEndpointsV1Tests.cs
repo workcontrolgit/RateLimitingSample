@@ -1,9 +1,9 @@
-using System.Net;
-using System.Net.Http.Json;
 using IntegrationTests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using RateLimitingSample.Data;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace IntegrationTests;
 

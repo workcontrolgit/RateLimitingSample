@@ -1,11 +1,11 @@
-using System.Net;
-using System.Net.Http.Json;
 using IntegrationTests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using RateLimitingSample.Data;
 using RateLimitingSample.Services;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace IntegrationTests;
 

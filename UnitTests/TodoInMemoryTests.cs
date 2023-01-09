@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
-using UnitTests.Helpers;
 using RateLimitingSample;
 using RateLimitingSample.Data;
+using UnitTests.Helpers;
 
 namespace UnitTests;
 
