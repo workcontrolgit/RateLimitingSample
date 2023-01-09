@@ -1,0 +1,25 @@
+﻿{
+  "TestSuite": "public_api_test_suite",
+  "TestName": "purchase_api_test",
+
+  "TargetScenarios": [ "DisabledScenario", "GlobalScenario", "ConcurrencyScenario", "FixedWindowScenario", "SlidingWindowScenario", "UserBasedScenario", "TokenBucketScenario" ],
+
+  "GlobalSettings": {
+
+    "ScenariosSettings": [
+      {
+        "ScenarioName": "DisabledScenario, GlobalScenario, ConcurrencyScenario, FixedWindowScenario, SlidingWindowScenario, UserBasedScenario, TokenBucketScenario",
+        "WarmUpDuration": "00:00:05",
+
+        "LoadSimulationsSettings": [
+          { "InjectPerSec": [ 100, "00:00:15" ] },
+          { "InjectPerSec": [ 200, "00:00:15" ] }
+        ],
+
+        "CustomSettings": {
+          "BaseUri": "https://jsonplaceholder.typicode.com"
+        }
+      }
+    ]
+  }
+}
