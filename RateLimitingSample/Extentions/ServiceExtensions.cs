@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.RateLimiting;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 using RateLimitingSample.Enums;
 using RateLimitingSample.Models;
 using System.Globalization;
+using System.Net.Http;
 using System.Threading.RateLimiting;
 
 namespace RateLimitingSample.Extentions
@@ -11,11 +14,14 @@ namespace RateLimitingSample.Extentions
         public static void AddRateLimiterExtension(this IServiceCollection services, IConfiguration configuration)
         {
 
-            var myOptions = new MyRateLimitOptions();
-            configuration.GetSection(MyRateLimitOptions.MyRateLimit).Bind(myOptions);
+            services.Configure<RateLimitingSettings>(
+                configuration.GetSection(RateLimitingSettings.UserBasedTokenBucket));
+
+            var limitSettings = new RateLimitingSettings();
 
             services.AddRateLimiter(config =>
             {
+                // On Rejected
                 config.OnRejected = (context, cancellationToken) =>
                 {
                     if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
@@ -24,51 +30,95 @@ namespace RateLimitingSample.Extentions
                     }
 
                     context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    context.HttpContext.RequestServices.GetService<ILoggerFactory>()?
+                    .CreateLogger("Microsoft.AspNetCore.RateLimitingMiddleware")
+                    .LogWarning("OnRejected: {RequestPath}", context.HttpContext.Request.Path);
 
                     return new ValueTask();
                 };
 
+                // example of policy based on login user name
+
+                config.AddPolicy(Policy.UserBasedPolicy.ToString(), context => { 
+
+                if (context.User.Identity?.IsAuthenticated == true) 
+                    {
+                        // UserBased, TokenBucket
+                        configuration.GetSection(RateLimitingSettings.UserBasedTokenBucket).Bind(limitSettings);
+                        return RateLimitPartition.GetTokenBucketLimiter(context.User.Identity.Name!, _ => new TokenBucketRateLimiterOptions
+                        {
+                            TokenLimit = limitSettings.TokenLimit,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = limitSettings.QueueLimit,
+                            ReplenishmentPeriod = TimeSpan.FromSeconds(limitSettings.ReplenishmentPeriod),
+                            TokensPerPeriod = limitSettings.TokensPerPeriod,
+                            AutoReplenishment = limitSettings.AutoReplenishment,
+                        });
+                    }
+                    // UserBased, SlidingWindow
+                    configuration.GetSection(RateLimitingSettings.UserBasedSlidingWindow).Bind(limitSettings);
+                    return RateLimitPartition.GetSlidingWindowLimiter("anonymous-user", _ => new SlidingWindowRateLimiterOptions
+                    {
+                        PermitLimit = limitSettings.PermitLimit,
+                        Window = TimeSpan.FromSeconds(limitSettings.Window),
+                        SegmentsPerWindow = limitSettings.SegmentsPerWindow,
+                        QueueLimit = limitSettings.QueueLimit,
+                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+                    });
+                });
+
+                // Global, FixedWindow
+                configuration.GetSection(RateLimitingSettings.RateLimitGlobalFixedWindow).Bind(limitSettings);
                 config.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
                     RateLimitPartition.GetFixedWindowLimiter(
                         partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
                         factory: partition => new FixedWindowRateLimiterOptions
                         {
-                            PermitLimit = myOptions.PermitLimit,
-                            Window = TimeSpan.FromSeconds(myOptions.Window),
-                            QueueLimit = myOptions.QueueLimit,
-                            AutoReplenishment = myOptions.AutoReplenishment
+                            PermitLimit = limitSettings.PermitLimit,
+                            Window = TimeSpan.FromSeconds(limitSettings.Window),
+                            QueueLimit = limitSettings.QueueLimit,
+                            AutoReplenishment = limitSettings.AutoReplenishment
                         }));
 
-                config.AddConcurrencyLimiter(policyName: Policy.Concurrency.ToString(), options =>
+                //Fixed Window
+                configuration.GetSection(RateLimitingSettings.FixedWindow).Bind(limitSettings);
+                config.AddFixedWindowLimiter(policyName: Policy.FixedWindowPolicy.ToString(), options =>
                 {
-                    options.PermitLimit = myOptions.PermitLimit;
+                    options.PermitLimit = limitSettings.PermitLimit;
+                    options.Window = TimeSpan.FromSeconds(limitSettings.Window);
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                    options.QueueLimit = myOptions.QueueLimit;
+                    options.QueueLimit = limitSettings.QueueLimit;
                 });
-                config.AddFixedWindowLimiter(policyName: Policy.FixedWindow.ToString(), options =>
+                // Sliding Window
+                configuration.GetSection(RateLimitingSettings.SlidingWindow).Bind(limitSettings);
+                config.AddSlidingWindowLimiter(policyName: Policy.SlidingWindowPolicy.ToString(), options =>
                 {
-                    options.PermitLimit = myOptions.PermitLimit;
-                    options.Window = TimeSpan.FromSeconds(myOptions.Window);
+                    options.PermitLimit = limitSettings.PermitLimit;
+                    options.Window = TimeSpan.FromSeconds(limitSettings.Window);
+                    options.SegmentsPerWindow = limitSettings.SegmentsPerWindow;
+                    options.QueueLimit = limitSettings.QueueLimit;
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                    options.QueueLimit = myOptions.QueueLimit;
                 });
-                config.AddSlidingWindowLimiter(policyName: Policy.SlidingWindow.ToString(), options =>
+                // Token Bucket
+                configuration.GetSection(RateLimitingSettings.TokenBucket).Bind(limitSettings);
+                config.AddTokenBucketLimiter(policyName: Policy.TokenBucketPolicy.ToString(), options =>
                 {
-                    options.PermitLimit = myOptions.PermitLimit;
-                    options.Window = TimeSpan.FromSeconds(myOptions.Window);
-                    options.SegmentsPerWindow = myOptions.SegmentsPerWindow;
+                    options.TokenLimit = limitSettings.TokenLimit;
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                    options.QueueLimit = myOptions.QueueLimit;
+                    options.QueueLimit = limitSettings.QueueLimit;
+                    options.ReplenishmentPeriod = TimeSpan.FromSeconds(limitSettings.ReplenishmentPeriod);
+                    options.TokensPerPeriod = limitSettings.TokensPerPeriod;
+                    options.AutoReplenishment = limitSettings.AutoReplenishment;
                 });
-                config.AddTokenBucketLimiter(policyName: Policy.BucketToken.ToString(), options =>
+                // Concurrency
+                configuration.GetSection(RateLimitingSettings.Concurrency).Bind(limitSettings);
+                config.AddConcurrencyLimiter(policyName: Policy.ConcurrencyPolicy.ToString(), options =>
                 {
-                    options.TokenLimit = myOptions.TokenLimit;
+                    options.PermitLimit = limitSettings.PermitLimit;
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                    options.QueueLimit = myOptions.QueueLimit;
-                    options.ReplenishmentPeriod = TimeSpan.FromSeconds(myOptions.ReplenishmentPeriod);
-                    options.TokensPerPeriod = myOptions.TokensPerPeriod;
-                    options.AutoReplenishment = myOptions.AutoReplenishment;
+                    options.QueueLimit = limitSettings.QueueLimit;
                 });
+
             }
                 );
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LoadTests.Enums;
+using Microsoft.Extensions.Configuration;
 using NBomber.Contracts;
 using NBomber.CSharp;
 using NBomber.Plugins.Http.CSharp;
@@ -6,11 +7,50 @@ using NBomber.Plugins.Http.CSharp;
 public static class ScenarioHelper
     {
 
+
+    public static Scenario GetDisabledLimiterScenario()
+    {
+        var httpFactory = HttpClientFactory.Create("0");
+
+        var step = Step.Create("/weatherforecast", clientFactory: httpFactory, execute: async (context) =>
+        {
+            try
+            {
+                var request =
+                    Http.CreateRequest("GET", GetBaseUrl() + "/weatherforecast")
+                        .WithHeader("Accept", "text/html")
+                        .WithCheck(async (response) =>
+                            response.IsSuccessStatusCode
+                                ? Response.Ok()
+                                : Response.Fail()
+                        );
+
+                var response = await Http.Send(request, context);
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                return Response.Fail();
+            }
+
+        });
+
+        var scenario = ScenarioBuilder.CreateScenario(TestScenario.DisabledRateLimit.ToString(), step)
+                .WithWarmUpDuration(TimeSpan.FromSeconds(5))
+                .WithLoadSimulations(
+                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
+                );
+
+        return scenario;
+    }
+
+
     public static Scenario GetGlobalLimiterScenario()
     {
         var httpFactory = HttpClientFactory.Create("1");
 
-        var stepDisableRateLimiting = Step.Create("todos/v1", clientFactory: httpFactory, execute: async (context) =>
+        var step = Step.Create("todos/v1", clientFactory: httpFactory, execute: async (context) =>
         {
             try
             {
@@ -34,7 +74,7 @@ public static class ScenarioHelper
 
         });
 
-        var scenario = ScenarioBuilder.CreateScenario("GlobalLimiter", stepDisableRateLimiting)
+        var scenario = ScenarioBuilder.CreateScenario(TestScenario.UserBasedRateLimit.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
                     LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
@@ -72,7 +112,7 @@ public static class ScenarioHelper
 
         });
 
-        var scenario = ScenarioBuilder.CreateScenario("Concurrency", step)
+        var scenario = ScenarioBuilder.CreateScenario(TestScenario.ConcurrencyRateLimit.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
                     LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
@@ -107,7 +147,7 @@ public static class ScenarioHelper
             }
         });
 
-        var scenario = ScenarioBuilder.CreateScenario("FixedWindow", step)
+        var scenario = ScenarioBuilder.CreateScenario(TestScenario.FixedWindowRateLimit.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
                     LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
@@ -143,7 +183,7 @@ public static class ScenarioHelper
 
         });
 
-        var scenario = ScenarioBuilder.CreateScenario("SlidingWindow", step)
+        var scenario = ScenarioBuilder.CreateScenario(TestScenario.SlidingWindowRateLimit.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
                     LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
@@ -179,7 +219,7 @@ public static class ScenarioHelper
 
         });
 
-        var scenario = ScenarioBuilder.CreateScenario("BucketToken", step)
+        var scenario = ScenarioBuilder.CreateScenario(TestScenario.TokenBucketRateLimit.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
                     LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
