@@ -2,15 +2,13 @@
 {
     public enum Policy
     {
-        Concurrency,
-        FixedWindow,
-        SlidingWindow,
-        BucketToken
-
-
+        UserBasedPolicy,
+        ConcurrencyPolicy,
+        FixedWindowPolicy,
+        SlidingWindowPolicy,
+        TokenBucketPolicy,
+        GlobalPolicy
     }
-
-
 }
 
 

@@ -7,8 +7,8 @@ public static class TodoEndpointsV1
 {
     public static RouteGroupBuilder MapTodosApiV1(this RouteGroupBuilder group)
     {
-        group.MapGet("/", GetAllTodos).DisableRateLimiting();
-        group.MapGet("/{id}", GetTodo).RequireRateLimiting(Policy.Concurrency.ToString());
+        group.MapGet("/", GetAllTodos).RequireRateLimiting(Policy.UserBasedPolicy.ToString());
+        group.MapGet("/{id}", GetTodo).RequireRateLimiting(Policy.ConcurrencyPolicy.ToString());
         group.MapPost("/", CreateTodo)
             .AddEndpointFilter(async (efiContext, next) =>
             {
@@ -30,14 +30,14 @@ public static class TodoEndpointsV1
         return group;
     }
 
-    // get all todos
+    // get all
     public static async Task<IResult> GetAllTodos(TodoGroupDbContext database)
     {
         var todos = await database.Todos.ToListAsync();
         return TypedResults.Ok(todos);
     }
 
-    // get todo by id
+    // get by id
     public static async Task<IResult> GetTodo(int id, TodoGroupDbContext database)
     {
         var todo = await database.Todos.FindAsync(id);
@@ -50,7 +50,7 @@ public static class TodoEndpointsV1
         return TypedResults.NotFound();
     }
 
-    // create todo
+    // create
     public static async Task<IResult> CreateTodo(TodoDto todo, TodoGroupDbContext database)
     {
         var newTodo = new Todo
@@ -66,7 +66,7 @@ public static class TodoEndpointsV1
         return TypedResults.Created($"/todos/v1/{newTodo.Id}", newTodo);
     }
 
-    // update todo
+    // update
     public static async Task<IResult> UpdateTodo(Todo todo, TodoGroupDbContext database)
     {
         var existingTodo = await database.Todos.FindAsync(todo.Id);
@@ -85,7 +85,7 @@ public static class TodoEndpointsV1
         return TypedResults.NotFound();
     }
 
-    // delete todo
+    // delete
     public static async Task<IResult> DeleteTodo(int id, TodoGroupDbContext database)
     {
         var todo = await database.Todos.FindAsync(id);

@@ -1,5 +1,7 @@
 
+using AutoBogus;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace RateLimitingSample.Data;
 
@@ -11,5 +13,11 @@ public class TodoGroupDbContext : DbContext
         Database.EnsureCreated();
     }
     public DbSet<Todo> Todos => Set<Todo>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        var todoFaker = AutoFaker.Generate<Todo>(10);
+        modelBuilder.Entity<Todo>().HasData(todoFaker);
+    }
 
 }

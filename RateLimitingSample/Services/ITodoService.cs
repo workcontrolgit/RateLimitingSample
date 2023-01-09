@@ -7,6 +7,7 @@ public interface ITodoService
     Task<List<Todo>> GetAll();
 
     Task<List<Todo>> GetIncompleteTodos();
+    Task<List<Todo>> GetCompleteTodos();
 
     ValueTask<Todo?> Find(int id);
 

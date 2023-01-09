@@ -8,13 +8,14 @@ public static class TodoEndpointsV2
 {
     public static RouteGroupBuilder MapTodosApiV2(this RouteGroupBuilder group)
     {
-        // bucket token
-        group.MapGet("/", GetAllTodos).RequireRateLimiting(Policy.FixedWindow.ToString());
-        // fixed window
-        group.MapGet("/incompleted", GetAllIncompletedTodos).RequireRateLimiting(Policy.SlidingWindow.ToString());
-        //global rate limiting
-        group.MapGet("/{id}", GetTodo).RequireRateLimiting(Policy.BucketToken.ToString());
-        // bucket token
+        // UserBasedPolicy
+        group.MapGet("/", GetAllTodos).RequireRateLimiting(Policy.UserBasedPolicy.ToString());
+        // SlidingWindowPolicy
+        group.MapGet("/incompleted", GetAllIncompletedTodos).RequireRateLimiting(Policy.SlidingWindowPolicy.ToString());
+        // GlobalPolicy, FixedWindow
+        group.MapGet("/completed", GetAllCompletedTodos);
+        // TokenBucketPolicy
+        group.MapGet("/{id}", GetTodo).RequireRateLimiting(Policy.TokenBucketPolicy.ToString());
         group.MapPost("/", CreateTodo)
             .AddEndpointFilter(async (efiContext, next) =>
             {
@@ -29,32 +30,36 @@ public static class TodoEndpointsV2
 
                 return await next(efiContext);
             })
-            // .DisableRateLimiting()
-            .RequireRateLimiting(Policy.BucketToken.ToString())
+            .RequireRateLimiting(Policy.TokenBucketPolicy.ToString())
             ;
 
-        // bucket token
-        group.MapPut("/{id}", UpdateTodo).RequireRateLimiting(Policy.BucketToken.ToString());
-        // bucket token
-        group.MapDelete("/{id}", DeleteTodo).RequireRateLimiting(Policy.BucketToken.ToString());
+        group.MapPut("/{id}", UpdateTodo).RequireRateLimiting(Policy.TokenBucketPolicy.ToString());
+        group.MapDelete("/{id}", DeleteTodo).RequireRateLimiting(Policy.TokenBucketPolicy.ToString());
 
         return group;
     }
 
-    // get all todos
+    // get all
     public static async Task<IResult> GetAllTodos(ITodoService todoService)
     {
         var todos = await todoService.GetAll();
         return TypedResults.Ok(todos);
     }
-
+    // get incompleted
     public static async Task<IResult> GetAllIncompletedTodos(ITodoService todoService)
     {
         var todos = await todoService.GetIncompleteTodos();
         return TypedResults.Ok(todos);
     }
+// get completed
+    public static async Task<IResult> GetAllCompletedTodos(ITodoService todoService)
+    {
+        var todos = await todoService.GetCompleteTodos();
+        return TypedResults.Ok(todos);
+    }
 
-    // get todo by id
+
+    // get by id
     public static async Task<IResult> GetTodo(int id, ITodoService todoService)
     {
         var todo = await todoService.Find(id);
@@ -67,7 +72,7 @@ public static class TodoEndpointsV2
         return TypedResults.NotFound();
     }
 
-    // create todo
+    // create
     public static async Task<IResult> CreateTodo(TodoDto todo, ITodoService todoService)
     {
         var newTodo = new Todo
@@ -82,7 +87,7 @@ public static class TodoEndpointsV2
         return TypedResults.Created($"/todos/v2/{newTodo.Id}", newTodo);
     }
 
-    // update todo
+    // update
     public static async Task<IResult> UpdateTodo(Todo todo, ITodoService todoService)
     {
         var existingTodo = await todoService.Find(todo.Id);
@@ -101,7 +106,7 @@ public static class TodoEndpointsV2
         return TypedResults.NotFound();
     }
 
-    // delete todo
+    // delete
     public static async Task<IResult> DeleteTodo(int id, ITodoService todoService)
     {
         var todo = await todoService.Find(id);
