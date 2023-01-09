@@ -2,15 +2,13 @@
 {
     public enum Policy
     {
-        Concurrency,
-        UserBasedRateLimiting,
-        SlidingWindow,
-        BucketToken
-
-
+        UserBasedPolicy,
+        ConcurrencyPolicy,
+        FixedWindowPolicy,
+        SlidingWindowPolicy,
+        TokenBucketPolicy,
+        GlobalPolicy
     }
-
-
 }
 
 

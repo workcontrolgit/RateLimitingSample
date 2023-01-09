@@ -48,4 +48,10 @@ public class TodoService : ITodoService
     {
         return _dbContext.Todos.Where(t => t.IsDone == false).ToListAsync();
     }
+
+    public Task<List<Todo>> GetCompleteTodos()
+    {
+        return _dbContext.Todos.Where(t => t.IsDone == true).ToListAsync();
+    }
+
 }
