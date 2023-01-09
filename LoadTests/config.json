@@ -1,11 +1,14 @@
 ﻿{
-  "TestSuite": "public_api_test_suite",
-  "TestName": "purchase_api_test",
+  "TestSuite": "Rate Limiting Test Suite",
+  "TestName": "todo_api_test",
 
   "TargetScenarios": [ "DisabledScenario", "GlobalScenario", "ConcurrencyScenario", "FixedWindowScenario", "SlidingWindowScenario", "UserBasedScenario", "TokenBucketScenario" ],
 
   "GlobalSettings": {
-
+    "ReportFileName": "my_report_name",
+    "ReportFolder": "./my_reports",
+    "ReportFormats": [ "Html", "Md", "Txt", "Csv" ],
+    "SendStatsInterval": "00:00:05",
     "ScenariosSettings": [
       {
         "ScenarioName": "DisabledScenario, GlobalScenario, ConcurrencyScenario, FixedWindowScenario, SlidingWindowScenario, UserBasedScenario, TokenBucketScenario",

@@ -1,6 +1,4 @@
-﻿using NBomber.Contracts;
-using NBomber.Contracts.Stats;
-using NBomber.CSharp;
+﻿using NBomber.CSharp;
 
 
 
@@ -14,13 +12,19 @@ var scenarioBucketTokenScenario = ScenarioHelper.GetBucketTokenScenario();
 
 NBomberRunner
     .RegisterScenarios(scenarioDisabledRateLimiting, scenarioGlobalRateLimiting, scenarioConcurrencyScenario, scenarioFixedWindowScenario, scenarioSlidingWindowScenario, scenarioUserBasedRateLimitScenario, scenarioBucketTokenScenario)
-    //.LoadConfig("config.json")
-    .WithTestSuite("Rate Limiting Test Suite")
-    .WithTestName("todo_api_test")
-    .WithReportFileName("rate_limiting_report")
-    .WithReportFolder("rate_limiting_reports")
-    .WithReportFormats(ReportFormat.Txt, ReportFormat.Csv, ReportFormat.Html, ReportFormat.Md)
+    .LoadConfig("config.json")
     .Run();
+
+
+//NBomberRunner
+//    .RegisterScenarios(scenarioDisabledRateLimiting, scenarioGlobalRateLimiting, scenarioConcurrencyScenario, scenarioFixedWindowScenario, scenarioSlidingWindowScenario, scenarioUserBasedRateLimitScenario, scenarioBucketTokenScenario)
+//    .WithTestSuite("Rate Limiting Test Suite")
+//    .WithTestName("todo_api_test")
+//    .WithReportFileName("rate_limiting_report")
+//    .WithReportFolder("rate_limiting_reports")
+//    .WithReportFormats(ReportFormat.Txt, ReportFormat.Csv, ReportFormat.Html, ReportFormat.Md)
+//    .Run();
+
 
 Console.WriteLine("Press any key ...");
 Console.ReadKey();

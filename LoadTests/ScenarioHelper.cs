@@ -5,7 +5,7 @@ using NBomber.CSharp;
 using NBomber.Plugins.Http.CSharp;
 
 public static class ScenarioHelper
-    {
+{
 
 
     public static Scenario GetDisabledLimiterScenario()
@@ -31,7 +31,7 @@ public static class ScenarioHelper
             }
             catch (Exception ex)
             {
-                context.Logger.Error(ex.Message);
+                //context.Logger.Error(ex.Message);
                 return Response.Fail();
             }
 
@@ -70,7 +70,7 @@ public static class ScenarioHelper
             }
             catch (Exception ex)
             {
-                context.Logger.Error(ex.Message);
+                //context.Logger.Error(ex.Message);
                 return Response.Fail();
             }
 
@@ -109,7 +109,7 @@ public static class ScenarioHelper
             }
             catch (Exception ex)
             {
-                context.Logger.Error(ex.Message);
+                //context.Logger.Error(ex.Message);
                 return Response.Fail();
             }
 
@@ -122,7 +122,7 @@ public static class ScenarioHelper
                 );
 
         return scenario;
-    }    
+    }
     public static Scenario GetFixedWindowScenario()
     {
         var httpFactory = HttpClientFactory.Create("3");
@@ -146,7 +146,7 @@ public static class ScenarioHelper
             }
             catch (Exception ex)
             {
-                context.Logger.Error(ex.Message);
+                //context.Logger.Error(ex.Message);
                 return Response.Fail();
             }
         });
@@ -182,7 +182,7 @@ public static class ScenarioHelper
             }
             catch (Exception ex)
             {
-                context.Logger.Error(ex.Message);
+                //context.Logger.Error(ex.Message);
                 return Response.Fail();
             }
 
@@ -195,7 +195,7 @@ public static class ScenarioHelper
                 );
 
         return scenario;
-    }    
+    }
     public static Scenario GetUserBasedScenario()
     {
         var httpFactory = HttpClientFactory.Create("5");
@@ -219,7 +219,7 @@ public static class ScenarioHelper
             }
             catch (Exception ex)
             {
-                context.Logger.Error(ex.Message);
+                //context.Logger.Error(ex.Message);
                 return Response.Fail();
             }
 
@@ -256,7 +256,7 @@ public static class ScenarioHelper
             }
             catch (Exception ex)
             {
-                context.Logger.Error(ex.Message);
+                //context.Logger.Error(ex.Message);
                 return Response.Fail();
             }
 
