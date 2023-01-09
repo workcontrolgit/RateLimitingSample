@@ -8,13 +8,13 @@ public static class TodoEndpointsV2
 {
     public static RouteGroupBuilder MapTodosApiV2(this RouteGroupBuilder group)
     {
-        // UserBasedPolicy
-        group.MapGet("/", GetAllTodos).RequireRateLimiting(Policy.UserBasedPolicy.ToString());
-        // SlidingWindowPolicy
+        // Map to NBomber FixedWindowScenario
+        group.MapGet("/", GetAllTodos).RequireRateLimiting(Policy.FixedWindowPolicy.ToString());
+        // Map to NBomber SlidingWindowScenario
         group.MapGet("/incompleted", GetAllIncompletedTodos).RequireRateLimiting(Policy.SlidingWindowPolicy.ToString());
-        // GlobalPolicy, FixedWindow
-        group.MapGet("/completed", GetAllCompletedTodos);
-        // TokenBucketPolicy
+        // Map to NBomber UserBasedScenario
+        group.MapGet("/completed", GetAllCompletedTodos).RequireRateLimiting(Policy.UserBasedPolicy.ToString());
+        // Map to NBomber TokenBucketScenario
         group.MapGet("/{id}", GetTodo).RequireRateLimiting(Policy.TokenBucketPolicy.ToString());
         group.MapPost("/", CreateTodo)
             .AddEndpointFilter(async (efiContext, next) =>

@@ -1,4 +1,5 @@
-﻿using NBomber.Contracts.Stats;
+﻿using NBomber.Contracts;
+using NBomber.Contracts.Stats;
 using NBomber.CSharp;
 
 
@@ -6,12 +7,14 @@ using NBomber.CSharp;
 var scenarioDisabledRateLimiting = ScenarioHelper.GetDisabledLimiterScenario();
 var scenarioGlobalRateLimiting = ScenarioHelper.GetGlobalLimiterScenario();
 var scenarioConcurrencyScenario = ScenarioHelper.GetConcurrencyScenario();
-var scenarioFixWindowsScenario = ScenarioHelper.GetFixedWindowScenario();
+var scenarioFixedWindowScenario = ScenarioHelper.GetFixedWindowScenario();
 var scenarioSlidingWindowScenario = ScenarioHelper.GetSlidingWindowScenario();
+var scenarioUserBasedRateLimitScenario = ScenarioHelper.GetUserBasedScenario();
 var scenarioBucketTokenScenario = ScenarioHelper.GetBucketTokenScenario();
 
 NBomberRunner
-    .RegisterScenarios(scenarioDisabledRateLimiting, scenarioGlobalRateLimiting, scenarioConcurrencyScenario, scenarioFixWindowsScenario, scenarioSlidingWindowScenario, scenarioBucketTokenScenario)
+    .RegisterScenarios(scenarioDisabledRateLimiting, scenarioGlobalRateLimiting, scenarioConcurrencyScenario, scenarioFixedWindowScenario, scenarioSlidingWindowScenario, scenarioUserBasedRateLimitScenario, scenarioBucketTokenScenario)
+    //.LoadConfig("config.json")
     .WithTestSuite("Rate Limiting Test Suite")
     .WithTestName("todo_api_test")
     .WithReportFileName("rate_limiting_report")
