@@ -12,7 +12,7 @@ public static class ScenarioHelper
     {
         var httpFactory = HttpClientFactory.Create("0");
 
-        var step = Step.Create("/weatherforecast", clientFactory: httpFactory, execute: async (context) =>
+        var step = Step.Create("weatherforecast", clientFactory: httpFactory, execute: async (context) =>
         {
             try
             {
