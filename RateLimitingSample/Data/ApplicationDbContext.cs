@@ -1,13 +1,12 @@
 
 using AutoBogus;
-using Bogus;
 using Microsoft.EntityFrameworkCore;
 
 namespace RateLimitingSample.Data;
 
-public class TodoGroupDbContext : DbContext
+public class ApplicationDbContext : DbContext
 {
-    public TodoGroupDbContext(DbContextOptions<TodoGroupDbContext> options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
         Database.EnsureCreated();
@@ -20,7 +19,7 @@ public class TodoGroupDbContext : DbContext
         var todoFaker = new AutoFaker<Todo>()
         .RuleFor(o => o.Id, f => id++);
 
-        var todos = todoFaker.Generate(100);
+        var todos = todoFaker.Generate(10000);
         modelBuilder.Entity<Todo>().HasData(todos);
     }
 

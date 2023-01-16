@@ -13,18 +13,19 @@ public class TestWebApplicationFactory<TProgram>
     {
         builder.ConfigureServices(services =>
         {
-            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<TodoGroupDbContext>));
+            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
 
             if (descriptor != null)
             {
                 services.Remove(descriptor);
             }
 
-            services.AddDbContext<TodoGroupDbContext>(options =>
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
                 var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 options.UseSqlite($"Data Source={Path.Join(path, "RateLimitingSample_tests.db")}");
             });
+
         });
 
         return base.CreateHost(builder);

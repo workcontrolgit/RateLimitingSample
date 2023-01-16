@@ -5,10 +5,10 @@ namespace RateLimitingSample.Services;
 
 public class TodoService : ITodoService
 {
-    private readonly TodoGroupDbContext _dbContext;
+    private readonly ApplicationDbContext _dbContext;
     private readonly IEmailService _emailService;
 
-    public TodoService(TodoGroupDbContext dbContext, IEmailService emailService)
+    public TodoService(ApplicationDbContext dbContext, IEmailService emailService)
     {
         _dbContext = dbContext;
         _emailService = emailService;

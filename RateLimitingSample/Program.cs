@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using RateLimitingSample;
 using RateLimitingSample.Data;
 using RateLimitingSample.Extentions;
@@ -17,13 +18,20 @@ builder.Services.AddSingleton<IEmailService, EmailService>();
 
 
 builder.Services.AddRateLimiterExtension(builder.Configuration);
-builder.Services.AddDbContext<TodoGroupDbContext>(options =>
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-    options.UseSqlite($"Data Source={Path.Join(path, "RateLimitingSample.db")}");
+    var useMSSQLLDatabase = builder.Configuration.GetValue<bool>("UseMSSQLLDatabase");
+
+    if (useMSSQLLDatabase)
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+    else
+    {
+        var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        options.UseSqlite($"Data Source={Path.Join(path, "RateLimitingSample.db")}");
+    }
 });
-
-
 
 var app = builder.Build();
 
