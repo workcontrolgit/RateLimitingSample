@@ -25,6 +25,7 @@ public class TestWebApplicationFactory<TProgram>
                 var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 options.UseSqlite($"Data Source={Path.Join(path, "RateLimitingSample_tests.db")}");
             });
+
         });
 
         return base.CreateHost(builder);
