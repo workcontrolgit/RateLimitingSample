@@ -1,15 +1,15 @@
 
 using AutoBogus;
-using Bogus;
 using Microsoft.EntityFrameworkCore;
 
 namespace RateLimitingSample.Data;
 
-public class TodoGroupDbContext : DbContext
+public class ApplicationDbContext : DbContext
 {
-    public TodoGroupDbContext(DbContextOptions<TodoGroupDbContext> options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
+        // Database.Migrate();
         Database.EnsureCreated();
     }
     public DbSet<Todo> Todos => Set<Todo>();

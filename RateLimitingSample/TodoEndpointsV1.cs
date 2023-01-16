@@ -33,14 +33,14 @@ public static class TodoEndpointsV1
     }
 
     // get all
-    public static async Task<IResult> GetAllTodos(TodoGroupDbContext database)
+    public static async Task<IResult> GetAllTodos(ApplicationDbContext database)
     {
         var todos = await database.Todos.ToListAsync();
         return TypedResults.Ok(todos);
     }
 
     // get by id
-    public static async Task<IResult> GetTodo(int id, TodoGroupDbContext database)
+    public static async Task<IResult> GetTodo(int id, ApplicationDbContext database)
     {
         var todo = await database.Todos.FindAsync(id);
 
@@ -53,7 +53,7 @@ public static class TodoEndpointsV1
     }
 
     // create
-    public static async Task<IResult> CreateTodo(TodoDto todo, TodoGroupDbContext database)
+    public static async Task<IResult> CreateTodo(TodoDto todo, ApplicationDbContext database)
     {
         var newTodo = new Todo
         {
@@ -69,7 +69,7 @@ public static class TodoEndpointsV1
     }
 
     // update
-    public static async Task<IResult> UpdateTodo(Todo todo, TodoGroupDbContext database)
+    public static async Task<IResult> UpdateTodo(Todo todo, ApplicationDbContext database)
     {
         var existingTodo = await database.Todos.FindAsync(todo.Id);
 
@@ -88,7 +88,7 @@ public static class TodoEndpointsV1
     }
 
     // delete
-    public static async Task<IResult> DeleteTodo(int id, TodoGroupDbContext database)
+    public static async Task<IResult> DeleteTodo(int id, ApplicationDbContext database)
     {
         var todo = await database.Todos.FindAsync(id);
 

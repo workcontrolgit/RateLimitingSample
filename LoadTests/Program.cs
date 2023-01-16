@@ -1,7 +1,5 @@
 ﻿using NBomber.CSharp;
 
-
-
 var scenarioDisabledRateLimiting = ScenarioHelper.GetDisabledLimiterScenario();
 var scenarioGlobalRateLimiting = ScenarioHelper.GetGlobalLimiterScenario();
 var scenarioConcurrencyScenario = ScenarioHelper.GetConcurrencyScenario();

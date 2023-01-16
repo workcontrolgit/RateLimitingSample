@@ -44,7 +44,7 @@ public class TodoEndpointsV1Tests : IClassFixture<TestWebApplicationFactory<Prog
     {
         using (var scope = _factory.Services.CreateScope())
         {
-            var db = scope.ServiceProvider.GetService<TodoGroupDbContext>();
+            var db = scope.ServiceProvider.GetService<ApplicationDbContext>();
             if (db != null && db.Todos.Any())
             {
                 db.Todos.RemoveRange(db.Todos);

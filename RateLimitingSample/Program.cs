@@ -17,10 +17,14 @@ builder.Services.AddSingleton<IEmailService, EmailService>();
 
 
 builder.Services.AddRateLimiterExtension(builder.Configuration);
-builder.Services.AddDbContext<TodoGroupDbContext>(options =>
+//builder.Services.AddDbContext<TodoGroupDbContext>(options =>
+//{
+//    var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+//    options.UseSqlite($"Data Source={Path.Join(path, "RateLimitingSample.db")}");
+//});
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-    options.UseSqlite($"Data Source={Path.Join(path, "RateLimitingSample.db")}");
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 
