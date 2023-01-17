@@ -19,7 +19,7 @@ public class ApplicationDbContext : DbContext
         var todoFaker = new AutoFaker<Todo>()
         .RuleFor(o => o.Id, f => id++);
 
-        var todos = todoFaker.Generate(10000);
+        var todos = todoFaker.Generate(100);
         modelBuilder.Entity<Todo>().HasData(todos);
     }
 
