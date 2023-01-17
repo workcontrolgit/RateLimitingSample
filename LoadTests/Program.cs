@@ -1,4 +1,5 @@
-﻿using NBomber.CSharp;
+﻿using LoadTests;
+using NBomber.CSharp;
 
 var scenarioDisabledRateLimiting = ScenarioHelper.GetDisabledLimiterScenario();
 var scenarioGlobalRateLimiting = ScenarioHelper.GetGlobalLimiterScenario();

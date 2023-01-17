@@ -4,10 +4,10 @@ using NBomber.Contracts;
 using NBomber.CSharp;
 using NBomber.Plugins.Http.CSharp;
 
-public static class ScenarioHelper
+namespace LoadTests;
+
+public class ScenarioHelper
 {
-
-
     public static Scenario GetDisabledLimiterScenario()
     {
         var httpFactory = HttpClientFactory.Create("0");
