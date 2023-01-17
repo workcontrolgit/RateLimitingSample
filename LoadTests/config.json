@@ -12,16 +12,12 @@
     "ScenariosSettings": [
       {
         "ScenarioName": "DisabledScenario, GlobalScenario, ConcurrencyScenario, FixedWindowScenario, SlidingWindowScenario, UserBasedScenario, TokenBucketScenario",
-        "WarmUpDuration": "00:00:05",
+        "WarmUpDuration": "00:00:10",
 
         "LoadSimulationsSettings": [
-          { "InjectPerSec": [ 100, "00:00:15" ] },
-          { "InjectPerSec": [ 200, "00:00:15" ] }
-        ],
-
-        "CustomSettings": {
-          "BaseUri": "https://jsonplaceholder.typicode.com"
-        }
+          { "InjectPerSec": [ 10, "00:00:15" ] },
+          { "InjectPerSec": [ 20, "00:00:15" ] }
+        ]
       }
     ]
   }
