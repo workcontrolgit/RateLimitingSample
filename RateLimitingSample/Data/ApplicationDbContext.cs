@@ -21,6 +21,7 @@ public class ApplicationDbContext : DbContext
 
         var todos = todoFaker.Generate(100);
         modelBuilder.Entity<Todo>().HasData(todos);
+
     }
 
 }
