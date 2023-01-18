@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 using RateLimitingSample.Enums;
 using RateLimitingSample.Models;
 using System.Globalization;
+using System.Net;
 using System.Threading.RateLimiting;
 
 namespace RateLimitingSample.Extentions
@@ -10,9 +12,6 @@ namespace RateLimitingSample.Extentions
     {
         public static void AddRateLimiterExtension(this IServiceCollection services, IConfiguration configuration)
         {
-
-            services.Configure<RateLimitingSettings>(
-                configuration.GetSection(RateLimitingSettings.UserBasedTokenBucket));
 
             var limitSettings = new RateLimitingSettings();
 
@@ -42,7 +41,7 @@ namespace RateLimitingSample.Extentions
                     if (context.User.Identity?.IsAuthenticated == true)
                     {
                         // UserBased, TokenBucket
-                        configuration.GetSection(RateLimitingSettings.UserBasedTokenBucket).Bind(limitSettings);
+                        configuration.GetSection(RateLimitingSettings.UserBasedTokenBucket.ToString()).Bind(limitSettings);
                         return RateLimitPartition.GetTokenBucketLimiter(context.User.Identity.Name!, _ => new TokenBucketRateLimiterOptions
                         {
                             TokenLimit = limitSettings.TokenLimit,
@@ -54,7 +53,7 @@ namespace RateLimitingSample.Extentions
                         });
                     }
                     // UserBased, SlidingWindow
-                    configuration.GetSection(RateLimitingSettings.UserBasedSlidingWindow).Bind(limitSettings);
+                    configuration.GetSection(RateLimitingSettings.UserBasedSlidingWindow.ToString()).Bind(limitSettings);
                     return RateLimitPartition.GetSlidingWindowLimiter("anonymous-user", _ => new SlidingWindowRateLimiterOptions
                     {
                         PermitLimit = limitSettings.PermitLimit,
@@ -65,32 +64,54 @@ namespace RateLimitingSample.Extentions
                     });
                 });
 
-                // Global, FixedWindow
-                configuration.GetSection(RateLimitingSettings.RateLimitGlobalFixedWindow).Bind(limitSettings);
-                config.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-                    RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-                        factory: partition => new FixedWindowRateLimiterOptions
-                        {
-                            PermitLimit = limitSettings.PermitLimit,
-                            Window = TimeSpan.FromSeconds(limitSettings.Window),
-                            QueueLimit = limitSettings.QueueLimit,
-                            AutoReplenishment = limitSettings.AutoReplenishment
-                        }));
+                // Global with FixedWindow
+                //configuration.GetSection(RateLimitingSettings.RateLimitGlobalFixedWindow.ToString()).Bind(limitSettings);
+                //config.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                //    RateLimitPartition.GetFixedWindowLimiter(
+                //        partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+                //        factory: partition => new FixedWindowRateLimiterOptions
+                //        {
+                //            PermitLimit = limitSettings.PermitLimit,
+                //            Window = TimeSpan.FromSeconds(limitSettings.Window),
+                //            QueueLimit = limitSettings.QueueLimit,
+                //            AutoReplenishment = limitSettings.AutoReplenishment
+                //        }));
+
+
+                config.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, IPAddress>(context =>
+                {
+                    configuration.GetSection(RateLimitingSettings.RateLimitGlobalFixedWindow.ToString()).Bind(limitSettings);
+                    IPAddress? remoteIpAddress = context.Connection.RemoteIpAddress;
+
+                    if (!IPAddress.IsLoopback(remoteIpAddress!))
+                    {
+                        return RateLimitPartition.GetFixedWindowLimiter
+                        (remoteIpAddress!, _ =>
+                            new FixedWindowRateLimiterOptions
+                            {
+                                PermitLimit = limitSettings.PermitLimit,
+                                Window = TimeSpan.FromSeconds(limitSettings.Window),
+                                QueueLimit = limitSettings.QueueLimit,
+                                AutoReplenishment = limitSettings.AutoReplenishment
+                            });
+                    }
+
+                    return RateLimitPartition.GetNoLimiter(IPAddress.Loopback);
+                });
 
                 //Fixed Window
-                configuration.GetSection(RateLimitingSettings.FixedWindow).Bind(limitSettings);
                 config.AddFixedWindowLimiter(policyName: Policy.FixedWindowPolicy.ToString(), options =>
                 {
+                    configuration.GetSection(RateLimitingSettings.FixedWindow.ToString()).Bind(limitSettings);
                     options.PermitLimit = limitSettings.PermitLimit;
                     options.Window = TimeSpan.FromSeconds(limitSettings.Window);
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                     options.QueueLimit = limitSettings.QueueLimit;
                 });
                 // Sliding Window
-                configuration.GetSection(RateLimitingSettings.SlidingWindow).Bind(limitSettings);
                 config.AddSlidingWindowLimiter(policyName: Policy.SlidingWindowPolicy.ToString(), options =>
                 {
+                    configuration.GetSection(RateLimitingSettings.SlidingWindow).Bind(limitSettings);
                     options.PermitLimit = limitSettings.PermitLimit;
                     options.Window = TimeSpan.FromSeconds(limitSettings.Window);
                     options.SegmentsPerWindow = limitSettings.SegmentsPerWindow;
@@ -98,9 +119,9 @@ namespace RateLimitingSample.Extentions
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                 });
                 // Token Bucket
-                configuration.GetSection(RateLimitingSettings.TokenBucket).Bind(limitSettings);
                 config.AddTokenBucketLimiter(policyName: Policy.TokenBucketPolicy.ToString(), options =>
                 {
+                    configuration.GetSection(RateLimitingSettings.TokenBucket.ToString()).Bind(limitSettings);
                     options.TokenLimit = limitSettings.TokenLimit;
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                     options.QueueLimit = limitSettings.QueueLimit;
@@ -109,9 +130,9 @@ namespace RateLimitingSample.Extentions
                     options.AutoReplenishment = limitSettings.AutoReplenishment;
                 });
                 // Concurrency
-                configuration.GetSection(RateLimitingSettings.Concurrency).Bind(limitSettings);
                 config.AddConcurrencyLimiter(policyName: Policy.ConcurrencyPolicy.ToString(), options =>
                 {
+                    configuration.GetSection(RateLimitingSettings.Concurrency.ToString()).Bind(limitSettings);
                     options.PermitLimit = limitSettings.PermitLimit;
                     options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                     options.QueueLimit = limitSettings.QueueLimit;
