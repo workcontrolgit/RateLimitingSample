@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Options;
 using RateLimitingSample.Enums;
 using RateLimitingSample.Models;
 using System.Globalization;

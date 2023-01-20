@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RateLimitingSample.Data;
 using RateLimitingSample.Enums;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace RateLimitingSample;
 public static class TodoEndpointsV1
@@ -8,8 +9,10 @@ public static class TodoEndpointsV1
     public static RouteGroupBuilder MapTodosApiV1(this RouteGroupBuilder group)
     {
         // Map to NBomber GlobalScenario
-        group.MapGet("/", GetAllTodos);
-        // Map to NBomber 
+        group.MapGet("/", GetAllTodos)
+            .WithMetadata(new SwaggerOperationAttribute(summary: "Summary", description: "Descritption Test"));
+
+        // Map to NBomber ConcurrencyScenario
         group.MapGet("/{id}", GetTodo).RequireRateLimiting(Policy.ConcurrencyPolicy.ToString());
         group.MapPost("/", CreateTodo)
             .AddEndpointFilter(async (efiContext, next) =>
