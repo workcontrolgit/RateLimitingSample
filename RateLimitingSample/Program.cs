@@ -41,9 +41,8 @@ try
         }
         else
         {
-            // use Sqlite
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            options.UseSqlite($"Data Source={Path.Join(path, "RateLimitingSample.db")}");
+            // use UseInMemoryDatabase
+            options.UseInMemoryDatabase($"InMemoryTestDb-{DateTime.Now.ToFileTimeUtc()}");
         }
     });
 
