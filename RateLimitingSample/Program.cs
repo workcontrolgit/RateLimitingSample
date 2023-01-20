@@ -55,6 +55,15 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+
+    // Ensure that the database for the context exists.For quick prototype
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        // For quick prototype.
+        dbContext.Database.EnsureCreated();
+    }
+
     app.UseHttpsRedirection();
     app.MapControllers();
     // For AutoWrapper

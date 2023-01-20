@@ -40,7 +40,7 @@ public class ScenarioHelper
         var scenario = ScenarioBuilder.CreateScenario(BombScenario.DisabledScenario.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
-                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
+                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(1))
                 );
 
         return scenario;
@@ -79,7 +79,7 @@ public class ScenarioHelper
         var scenario = ScenarioBuilder.CreateScenario(BombScenario.GlobalScenario.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
-                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
+                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(1))
                 );
 
         return scenario;
@@ -118,7 +118,7 @@ public class ScenarioHelper
         var scenario = ScenarioBuilder.CreateScenario(BombScenario.ConcurrencyScenario.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
-                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
+                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(1))
                 );
 
         return scenario;
@@ -154,7 +154,7 @@ public class ScenarioHelper
         var scenario = ScenarioBuilder.CreateScenario(BombScenario.FixedWindowScenario.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
-                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
+                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(1))
                 );
 
         return scenario;
@@ -191,7 +191,7 @@ public class ScenarioHelper
         var scenario = ScenarioBuilder.CreateScenario(BombScenario.SlidingWindowScenario.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
-                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
+                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(1))
                 );
 
         return scenario;
@@ -228,7 +228,7 @@ public class ScenarioHelper
         var scenario = ScenarioBuilder.CreateScenario(BombScenario.UserBasedScenario.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
-                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
+                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(1))
                 );
 
         return scenario;
@@ -265,7 +265,7 @@ public class ScenarioHelper
         var scenario = ScenarioBuilder.CreateScenario(BombScenario.TokenBucketScenario.ToString(), step)
                 .WithWarmUpDuration(TimeSpan.FromSeconds(5))
                 .WithLoadSimulations(
-                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(2))
+                    LoadSimulation.NewInjectPerSec(_rate: 100, _during: TimeSpan.FromMinutes(1))
                 );
 
         return scenario;
