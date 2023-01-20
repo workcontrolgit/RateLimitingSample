@@ -27,7 +27,7 @@ try
     builder.Services.AddTransient<ITodoService, TodoService>();
     builder.Services.AddSingleton<IEmailService, EmailService>();
 
-
+    // Add rate limiting service from Nuget package Microsoft.AspNetCore.RateLimiting
     builder.Services.AddRateLimiterExtension(builder.Configuration);
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
     {
@@ -68,7 +68,7 @@ try
     // For AutoWrapper
     app.UseApiResponseAndExceptionWrapper();
 
-    // For Microsoft.AspNetCore.RateLimiting
+    // Add Microsoft.AspNetCore.RateLimiting middleware
     app.UseRateLimiter();
 
 

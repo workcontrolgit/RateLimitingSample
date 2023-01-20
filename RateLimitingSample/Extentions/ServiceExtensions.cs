@@ -63,19 +63,6 @@ namespace RateLimitingSample.Extentions
                     });
                 });
 
-                // Global with FixedWindow
-                //configuration.GetSection(RateLimitingSettings.RateLimitGlobalFixedWindow.ToString()).Bind(limitSettings);
-                //config.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-                //    RateLimitPartition.GetFixedWindowLimiter(
-                //        partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
-                //        factory: partition => new FixedWindowRateLimiterOptions
-                //        {
-                //            PermitLimit = limitSettings.PermitLimit,
-                //            Window = TimeSpan.FromSeconds(limitSettings.Window),
-                //            QueueLimit = limitSettings.QueueLimit,
-                //            AutoReplenishment = limitSettings.AutoReplenishment
-                //        }));
-
 
                 config.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, IPAddress>(context =>
                 {
