@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RateLimitingSample.Data;
 using RateLimitingSample.Enums;
+using RateLimitingSample.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RateLimitingSample;
@@ -9,8 +10,7 @@ public static class TodoEndpointsV1
     public static RouteGroupBuilder MapTodosApiV1(this RouteGroupBuilder group)
     {
         // Map to NBomber GlobalScenario
-        group.MapGet("/", GetAllTodos)
-            .WithMetadata(new SwaggerOperationAttribute(summary: "Summary", description: "Descritption Test"));
+        group.MapGet("/", GetAllTodos);
 
         // Map to NBomber ConcurrencyScenario
         group.MapGet("/{id}", GetTodo).RequireRateLimiting(Policy.ConcurrencyPolicy.ToString());
@@ -36,16 +36,17 @@ public static class TodoEndpointsV1
     }
 
     // get all
-    public static async Task<IResult> GetAllTodos(ApplicationDbContext database)
+    public static async Task<IResult> GetAllTodos(ITodoService todoService)
     {
-        var todos = await database.Todos.ToListAsync();
+        var todos = await todoService.GetAll();
         return TypedResults.Ok(todos);
+
     }
 
     // get by id
-    public static async Task<IResult> GetTodo(int id, ApplicationDbContext database)
+    public static async Task<IResult> GetTodo(int id, ITodoService todoService)
     {
-        var todo = await database.Todos.FindAsync(id);
+        var todo = await todoService.Find(id);
 
         if (todo != null)
         {
@@ -56,7 +57,7 @@ public static class TodoEndpointsV1
     }
 
     // create
-    public static async Task<IResult> CreateTodo(TodoDto todo, ApplicationDbContext database)
+    public static async Task<IResult> CreateTodo(TodoDto todo, ITodoService todoService)
     {
         var newTodo = new Todo
         {
@@ -65,16 +66,15 @@ public static class TodoEndpointsV1
             IsDone = todo.IsDone
         };
 
-        await database.Todos.AddAsync(newTodo);
-        await database.SaveChangesAsync();
+        await todoService.Add(newTodo);
 
         return TypedResults.Created($"/todos/v1/{newTodo.Id}", newTodo);
     }
 
     // update
-    public static async Task<IResult> UpdateTodo(Todo todo, ApplicationDbContext database)
+    public static async Task<IResult> UpdateTodo(Todo todo, ITodoService todoService)
     {
-        var existingTodo = await database.Todos.FindAsync(todo.Id);
+        var existingTodo = await todoService.Find(todo.Id);
 
         if (existingTodo != null)
         {
@@ -82,7 +82,7 @@ public static class TodoEndpointsV1
             existingTodo.Description = todo.Description;
             existingTodo.IsDone = todo.IsDone;
 
-            await database.SaveChangesAsync();
+            await todoService.Update(existingTodo);
 
             return TypedResults.Created($"/todos/v1/{existingTodo.Id}", existingTodo);
         }
@@ -91,15 +91,13 @@ public static class TodoEndpointsV1
     }
 
     // delete
-    public static async Task<IResult> DeleteTodo(int id, ApplicationDbContext database)
+    public static async Task<IResult> DeleteTodo(int id, ITodoService todoService)
     {
-        var todo = await database.Todos.FindAsync(id);
+        var todo = await todoService.Find(id);
 
         if (todo != null)
         {
-            database.Todos.Remove(todo);
-            await database.SaveChangesAsync();
-
+            await todoService.Remove(todo);
             return TypedResults.NoContent();
         }
 

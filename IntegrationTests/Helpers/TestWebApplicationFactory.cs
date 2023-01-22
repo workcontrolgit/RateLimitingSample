@@ -22,8 +22,8 @@ public class TestWebApplicationFactory<TProgram>
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                options.UseSqlite($"Data Source={Path.Join(path, "RateLimitingSample_tests.db")}");
+                // use UseInMemoryDatabase
+                options.UseInMemoryDatabase($"InMemoryTestDb-{DateTime.Now.ToFileTimeUtc()}");
             });
 
         });
