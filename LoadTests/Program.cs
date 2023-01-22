@@ -22,7 +22,6 @@ var scenarioBucketTokenScenario = ScenarioHelper.GetBucketTokenScenario();
 
 NBomberRunner
     .RegisterScenarios(scenarioDisabledRateLimiting, scenarioGlobalRateLimiting, scenarioConcurrencyScenario, scenarioFixedWindowScenario, scenarioSlidingWindowScenario, scenarioUserBasedRateLimitScenario, scenarioBucketTokenScenario)
-    //.RegisterScenarios(scenarioGlobalRateLimiting)
     .WithTestSuite("Rate Limiting Test Suite")
     .WithTestName("todo_api_test")
     .WithReportFileName("my_reports")

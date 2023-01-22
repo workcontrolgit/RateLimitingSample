@@ -24,7 +24,7 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
-    builder.Services.AddTransient<ITodoService, TodoService>();
+    builder.Services.AddScoped<ITodoService, TodoService>();
     builder.Services.AddSingleton<IEmailService, EmailService>();
 
     // Add rate limiting service from Nuget package Microsoft.AspNetCore.RateLimiting
@@ -45,6 +45,9 @@ try
             options.UseInMemoryDatabase($"InMemoryTestDb-{DateTime.Now.ToFileTimeUtc()}");
         }
     });
+
+    // builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), ServiceLifetime.Scoped);
+
 
     var app = builder.Build();
 
