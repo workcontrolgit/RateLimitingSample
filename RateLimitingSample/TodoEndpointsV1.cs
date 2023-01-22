@@ -38,8 +38,9 @@ public static class TodoEndpointsV1
     // get all
     public static async Task<IResult> GetAllTodos(ApplicationDbContext database)
     {
-        var todos = await database.Todos.ToListAsync();
+        var todos = await database.Todos.AsNoTracking().ToListAsync();
         return TypedResults.Ok(todos);
+
     }
 
     // get by id

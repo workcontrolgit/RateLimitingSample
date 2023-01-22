@@ -21,7 +21,7 @@ public class TodoService : ITodoService
 
     public async Task<List<Todo>> GetAll()
     {
-        return await _dbContext.Todos.ToListAsync();
+        return await _dbContext.Todos.AsNoTracking().ToListAsync();
     }
 
     public async Task Add(Todo todo)
@@ -46,12 +46,12 @@ public class TodoService : ITodoService
 
     public Task<List<Todo>> GetIncompleteTodos()
     {
-        return _dbContext.Todos.Where(t => t.IsDone == false).ToListAsync();
+        return _dbContext.Todos.Where(t => t.IsDone == false).AsNoTracking().ToListAsync();
     }
 
     public Task<List<Todo>> GetCompleteTodos()
     {
-        return _dbContext.Todos.Where(t => t.IsDone == true).ToListAsync();
+        return _dbContext.Todos.Where(t => t.IsDone == true).AsNoTracking().ToListAsync();
     }
 
 }

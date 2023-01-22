@@ -69,18 +69,18 @@ namespace RateLimitingSample.Extentions
                     configuration.GetSection(RateLimitingSettings.RateLimitGlobalFixedWindow.ToString()).Bind(limitSettings);
                     IPAddress? remoteIpAddress = context.Connection.RemoteIpAddress;
 
-                    if (!IPAddress.IsLoopback(remoteIpAddress!))
-                    {
-                        return RateLimitPartition.GetFixedWindowLimiter
-                        (remoteIpAddress!, _ =>
-                            new FixedWindowRateLimiterOptions
-                            {
-                                PermitLimit = limitSettings.PermitLimit,
-                                Window = TimeSpan.FromSeconds(limitSettings.Window),
-                                QueueLimit = limitSettings.QueueLimit,
-                                AutoReplenishment = limitSettings.AutoReplenishment
-                            });
-                    }
+                    //if (!IPAddress.IsLoopback(remoteIpAddress!))
+                    //{
+                    //    return RateLimitPartition.GetFixedWindowLimiter
+                    //    (remoteIpAddress!, _ =>
+                    //        new FixedWindowRateLimiterOptions
+                    //        {
+                    //            PermitLimit = limitSettings.PermitLimit,
+                    //            Window = TimeSpan.FromSeconds(limitSettings.Window),
+                    //            QueueLimit = limitSettings.QueueLimit,
+                    //            AutoReplenishment = limitSettings.AutoReplenishment
+                    //        });
+                    //}
 
                     return RateLimitPartition.GetNoLimiter(IPAddress.Loopback);
                 });
